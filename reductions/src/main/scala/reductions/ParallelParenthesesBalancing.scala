@@ -41,22 +41,45 @@ object ParallelParenthesesBalancing {
   /** Returns `true` iff the parentheses in the input `chars` are balanced.
    */
   def balance(chars: Array[Char]): Boolean = {
-    ???
+    var i: Int = 0; var depth: Int = 0
+    while (depth >= 0 & i < chars.length) {
+      val c = chars(i)
+      if (c == '(') depth += 1
+      else if (c == ')') depth -= 1
+      i += 1
+    }
+    depth == 0
   }
 
   /** Returns `true` iff the parentheses in the input `chars` are balanced.
    */
   def parBalance(chars: Array[Char], threshold: Int): Boolean = {
+    case class Brackets(finalDepth: Int, hwm: Int) // hwm <= 0
 
-    def traverse(idx: Int, until: Int, arg1: Int, arg2: Int) /*: ???*/ = {
-      ???
+    def traverse(idx: Int, until: Int, d: Int, h: Int): Brackets = {
+      var i: Int = idx; var depth: Int = d; var hwm: Int = h
+      while (i < until) {
+        val c = chars(i)
+        if (c == '(') depth += 1
+        else if (c == ')') { depth -= 1; hwm = Math.min(hwm, depth) }
+        i += 1
+      }
+      Brackets(depth, hwm)
     }
 
-    def reduce(from: Int, until: Int) /*: ???*/ = {
-      ???
+    def reduce(from: Int, until: Int): Brackets = {
+      if (until - from <= threshold) traverse(from, until, 0, 0)
+      else {
+        val mid = (from + until) / 2
+        val (reduceLeft, reduceRight) = common.parallel(reduce(from,mid), reduce(mid,until))
+        Brackets(
+          reduceLeft.finalDepth + reduceRight.finalDepth,
+          Math.min(reduceLeft.hwm, reduceLeft.finalDepth + reduceRight.hwm)
+        )
+      }
     }
 
-    reduce(0, chars.length) == ???
+    reduce(0, chars.length) == Brackets(0, 0)
   }
 
   // For those who want more:

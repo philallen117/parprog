@@ -12,8 +12,9 @@ import ParallelCountChange._
 @RunWith(classOf[JUnitRunner])
 class ParallelCountChangeSuite extends FunSuite {
 
+
   test("countChange should return 0 for money < 0") {
-    def check(money: Int, coins: List[Int]) = 
+    def check(money: Int, coins: List[Int]) =
       assert(countChange(money, coins) == 0,
         s"countChang($money, _) should be 0")
 
@@ -63,5 +64,68 @@ class ParallelCountChangeSuite extends FunSuite {
     check(250, List(1, 2, 5, 10, 20, 50), 177863)
   }
 
+//  test("parCountChange should invoke the parallel construct 6 times " +
+//    "for money == 16, coins == List(1) and moneyThreshold(16)") {
+//    parCountChange(16, List(1), moneyThreshold(16))
+//  }
 
+  test("moneyThreshold(16)") {
+    val threshold = moneyThreshold(16)
+    assert(!threshold(11, List()), "threshold false for 11")
+    assert(threshold(10, List()), "threshold true for 10")
+  }
+
+  /*
+  // parCountChange
+  test("parCountChange should return 0 for money < 0") {
+    def check(money: Int, coins: List[Int]) =
+      assert(parCountChange(money, coins, 2) == 0,
+        s"countChang($money, _, 2) should be 0")
+
+    check(-1, List())
+    check(-1, List(1, 2, 3))
+    check(-Int.MinValue, List())
+    check(-Int.MinValue, List(1, 2, 3))
+  }
+
+  test("parCountChange should return 1 when money == 0") {
+    def check(coins: List[Int]) =
+      assert(parCountChange(0, coins, 5) == 1,
+        s"countChange(0, _, 5) should be 1")
+
+    check(List())
+    check(List(1, 2, 3))
+    check(List.range(1, 100))
+  }
+
+  test("parCountChange should return 0 for money > 0 and coins = List()") {
+    def check(money: Int) =
+      assert(parCountChange(money, List(),2) == 0,
+        s"parCountChange($money, List(), 2) should be 0")
+
+    check(1)
+    check(Int.MaxValue)
+  }
+
+  test("parCountChange should work when there is only one coin") {
+    def check(money: Int, coins: List[Int], expected: Int) =
+      assert(parCountChange(money, coins, 2) == expected,
+        s"parCountChange($money, $coins, 2) should be $expected")
+
+    check(1, List(1), 1)
+    check(2, List(1), 1)
+    check(1, List(2), 0)
+    check(Int.MaxValue, List(Int.MaxValue), 1)
+    check(Int.MaxValue - 1, List(Int.MaxValue), 0)
+  }
+
+  test("parCountChange should work for multi-coins") {
+    def check(money: Int, coins: List[Int], expected: Int) =
+      assert(parCountChange(money, coins, 4) == expected,
+        s"parCountChange($money, $coins, 4) should be $expected")
+
+    check(50, List(1, 2, 5, 10), 341)
+    check(250, List(1, 2, 5, 10, 20, 50), 177863)
+  }
+*/
 }

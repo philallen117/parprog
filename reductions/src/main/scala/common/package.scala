@@ -40,6 +40,7 @@ package object common {
   }
 
   def parallel[A, B](taskA: => A, taskB: => B): (A, B) = {
+    // println("*")
     scheduler.value.parallel(taskA, taskB)
   }
 

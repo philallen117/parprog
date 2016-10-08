@@ -46,7 +46,15 @@ object ParallelCountChange {
    *  coins for the specified amount of money.
    */
   def countChange(money: Int, coins: List[Int]): Int = {
-    ???
+    if(money < 0) 0
+    else if(money == 0) 1
+    else if (coins.isEmpty) 0
+    else {
+      val moneyLeft = money - coins.head
+      val countUsingFirstCoin = countChange(moneyLeft, coins)
+      val countUsingOtherCoins = countChange(money, coins.tail)
+      countUsingFirstCoin + countUsingOtherCoins
+    }
   }
 
   type Threshold = (Int, List[Int]) => Boolean
@@ -55,20 +63,37 @@ object ParallelCountChange {
    *  specified list of coins for the specified amount of money.
    */
   def parCountChange(money: Int, coins: List[Int], threshold: Threshold): Int = {
-    ???
+    if(money < 0) 0
+    else if(money == 0) 1
+    else if (coins.isEmpty) 0
+    else {
+      if (threshold(money, coins)) countChange(money, coins)
+      else {
+        val moneyLeft = money - coins.head
+        val (countUsingFirstCoin, countUsingOtherCoins) = common.parallel(
+          parCountChange(moneyLeft, coins, threshold),
+          parCountChange(money, coins.tail, threshold)
+        )
+        countUsingFirstCoin + countUsingOtherCoins
+      }
+    }
   }
 
   /** Threshold heuristic based on the starting money. */
-  def moneyThreshold(startingMoney: Int): Threshold =
-    ???
+  def moneyThreshold(startingMoney: Int): Threshold = {
+    val moneyThreshold = (startingMoney * 2) / 3
+    (m, _) => m <= moneyThreshold
+  }
 
   /** Threshold heuristic based on the total number of initial coins. */
-  def totalCoinsThreshold(totalCoins: Int): Threshold =
-    ???
-
+  def totalCoinsThreshold(totalCoins: Int): Threshold = {
+    val coinsThreshold = (totalCoins * 2) / 3
+    (_, l) => l.length <= coinsThreshold
+  }
 
   /** Threshold heuristic based on the starting money and the initial list of coins. */
   def combinedThreshold(startingMoney: Int, allCoins: List[Int]): Threshold = {
-    ???
+    val prodThreshold = (startingMoney * allCoins.length) / 2
+    (m, l) => m * l.length <= prodThreshold
   }
 }
