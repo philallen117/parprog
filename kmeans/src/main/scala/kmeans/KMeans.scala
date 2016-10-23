@@ -43,7 +43,10 @@ class KMeans {
   }
 
   def classify(points: GenSeq[Point], means: GenSeq[Point]): GenMap[Point, GenSeq[Point]] = {
-    ???
+    val all = for { p <- points } yield (findClosest(p, means), p)
+    val allGrouped = all groupBy { _._1 }
+    val t = allGrouped mapValues { _ map { _._2 } }
+    (for ( m <- means ) yield if (t contains m) (m, t(m)) else (m, Nil)).toMap
   }
 
   def findAverage(oldMean: Point, points: GenSeq[Point]): Point = if (points.length == 0) oldMean else {
@@ -59,16 +62,19 @@ class KMeans {
   }
 
   def update(classified: GenMap[Point, GenSeq[Point]], oldMeans: GenSeq[Point]): GenSeq[Point] = {
-    ???
+    for (om <- oldMeans) yield findAverage(om, classified(om))
   }
 
   def converged(eta: Double)(oldMeans: GenSeq[Point], newMeans: GenSeq[Point]): Boolean = {
-    ???
+    val distances = oldMeans zip newMeans map { x => x._1 squareDistance x._2 }
+    distances forall {_ <= eta}
   }
 
   @tailrec
   final def kMeans(points: GenSeq[Point], means: GenSeq[Point], eta: Double): GenSeq[Point] = {
-    if (???) kMeans(???, ???, ???) else ??? // your implementation need to be tail recursive
+    val gm = classify(points, means)
+    val newMeans = update(gm, means)
+    if (!converged(eta)(means, newMeans)) kMeans(points, newMeans, eta) else newMeans
   }
 }
 

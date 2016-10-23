@@ -1,11 +1,15 @@
 package kmeans
 
 import java.util.concurrent._
+
+import KM._
+
 import scala.collection._
 import org.scalatest.FunSuite
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import common._
+
 import scala.math._
 
 object KM extends KMeans
@@ -69,6 +73,16 @@ class KMeansSuite extends FunSuite {
     val means: GenSeq[Point] = IndexedSeq()
     val expected = GenMap[Point,GenSeq[Point]]()
     checkParClassify(points, means, expected)
+  }
+
+  test("kMeans 1") {
+    val points = Vector(new Point(0.0, 0.0, 1.0), new Point(0.0, 0.0, -1.0), new Point(0.0, 1.0, 0.0), new Point(0.0, 10.0, 0.0))
+    val oldMeans = Vector(new Point(0, -1, 0), new Point(0, 2, 0))
+    val eta = 12.25
+    val newMeans = kMeans(points, oldMeans, eta).toList
+    val expected = List(new Point(0.0, 0.0, 0.0), new Point(0.0, 5.5, 0.0))
+    val errors = (newMeans zip expected) map {x => x._1 squareDistance x._2}
+    assert(errors.forall(_ < 0.0001), "means should be (0.0, 0.0, 0.0), (0.0, 5.5, 0.0)")
   }
 
 }
